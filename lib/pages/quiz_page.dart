@@ -21,7 +21,7 @@ class _QuizPageState extends State<QuizPage> {
 
   bool get _isFinalQuiz => _currentQuizIndex == Constants.quizData.length - 1;
 
-  MaterialBanner get _resultBanner {
+  Widget _resultBanner() {
     return MaterialBanner(
       content: Row(
         children: [
@@ -40,10 +40,8 @@ class _QuizPageState extends State<QuizPage> {
       ),
       actions: [
         TextButton(
-          onPressed: () {
-            ScaffoldMessenger.of(context).clearMaterialBanners();
-          },
-          child: const Text('閉じる'),
+          onPressed: () => _onTapNext(context),
+          child: const Text('次へ'),
         ),
       ],
     );
@@ -59,11 +57,9 @@ class _QuizPageState extends State<QuizPage> {
         _score++;
       });
     }
-    ScaffoldMessenger.of(context).showMaterialBanner(_resultBanner);
   }
 
-  void _onTapNext() {
-    ScaffoldMessenger.of(context).clearMaterialBanners();
+  void _onTapNext(BuildContext context) {
     if (_isFinalQuiz) {
       Navigator.pushReplacement(
         context,
@@ -86,6 +82,11 @@ class _QuizPageState extends State<QuizPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [
+              SizedBox(
+                  height: 64.0,
+                  child: _selectedAnswer == null
+                      ? const SizedBox.shrink()
+                      : _resultBanner()),
               const SizedBox(height: 64.0),
               Text(
                 'Q${_currentQuizIndex + 1}. ${_currentQuiz.question}',
@@ -136,7 +137,8 @@ class _QuizPageState extends State<QuizPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _selectedAnswer == null ? null : _onTapNext,
+                  onPressed: () =>
+                      _selectedAnswer == null ? null : _onTapNext(context),
                   child: Text(_isFinalQuiz ? '結果を見る' : '次へ'),
                 ),
               ),
