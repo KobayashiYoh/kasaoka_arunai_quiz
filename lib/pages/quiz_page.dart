@@ -3,6 +3,8 @@ import 'package:kasaoka_arunai_quiz/constants/constants.dart';
 import 'package:kasaoka_arunai_quiz/models/quiz.dart';
 import 'package:kasaoka_arunai_quiz/pages/result_page.dart';
 
+import '../components/explanation_section.dart';
+
 class QuizPage extends StatefulWidget {
   const QuizPage({super.key});
 
@@ -97,18 +99,18 @@ class _QuizPageState extends State<QuizPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const SizedBox(height: 16.0),
-                        _ExplanationSection(
+                        ExplanationSection(
                           title: '結果',
                           text: _isMatchAnswer ? '正解' : '不正解',
                         ),
                         const SizedBox(height: 16.0),
-                        _ExplanationSection(
+                        ExplanationSection(
                           title: '解答',
                           text:
                               '${_currentQuiz.answer ? 'ある' : 'ない'}（あなたの選択肢「${_selectedAnswer! ? 'ある' : 'ない'}」）',
                         ),
                         const SizedBox(height: 16.0),
-                        _ExplanationSection(
+                        ExplanationSection(
                           title: '解説',
                           text: _currentQuiz.description,
                         ),
@@ -130,33 +132,6 @@ class _QuizPageState extends State<QuizPage> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _ExplanationSection extends StatelessWidget {
-  const _ExplanationSection({
-    required this.title,
-    required this.text,
-  });
-
-  final String title;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(text),
-      ],
     );
   }
 }
