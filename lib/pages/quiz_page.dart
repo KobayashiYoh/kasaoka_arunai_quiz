@@ -23,32 +23,6 @@ class _QuizPageState extends State<QuizPage> {
 
   bool get _isFinalQuiz => _currentQuizIndex == Constants.quizData.length - 1;
 
-  Widget _resultBanner() {
-    return MaterialBanner(
-      content: Row(
-        children: [
-          _isMatchAnswer
-              ? const Icon(
-                  Icons.circle_outlined,
-                  color: Colors.red,
-                )
-              : const Icon(
-                  Icons.close,
-                  color: Colors.blue,
-                ),
-          const SizedBox(width: 8.0),
-          Text(_isMatchAnswer ? '正解' : '不正解'),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => _onTapNext(context),
-          child: const Text('次へ'),
-        ),
-      ],
-    );
-  }
-
   void _onTapSelection(bool selectedAnswer) {
     if (_hasSelectedAnswer) return;
     setState(() {
@@ -80,75 +54,80 @@ class _QuizPageState extends State<QuizPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [
-              SizedBox(
-                  height: 64.0,
-                  child: _selectedAnswer == null
-                      ? const SizedBox.shrink()
-                      : _resultBanner()),
-              const SizedBox(height: 64.0),
-              Text(
-                'Q${_currentQuizIndex + 1}. ${_currentQuiz.question}',
-                style: const TextStyle(fontSize: 18.0),
+        child: Stack(
+          children: [
+            if (_hasSelectedAnswer)
+              _ResultBanner(
+                isMatchAnswer: _hasSelectedAnswer,
+                onPressedAction: () => _onTapNext(context),
               ),
-              const SizedBox(height: 32.0),
-              Row(
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
                 children: [
-                  Expanded(
-                    child: _SelectionButton(
-                      onPressed: () => _onTapSelection(true),
-                      answer: true,
-                      hasSelectedAnswer: _hasSelectedAnswer,
+                  const SizedBox(height: 64.0),
+                  const SizedBox(height: 64.0),
+                  Text(
+                    'Q${_currentQuizIndex + 1}. ${_currentQuiz.question}',
+                    style: const TextStyle(fontSize: 18.0),
+                  ),
+                  const SizedBox(height: 32.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _SelectionButton(
+                          onPressed: () => _onTapSelection(true),
+                          answer: true,
+                          hasSelectedAnswer: _hasSelectedAnswer,
+                        ),
+                      ),
+                      const SizedBox(width: 32.0),
+                      Expanded(
+                        child: _SelectionButton(
+                          onPressed: () => _onTapSelection(false),
+                          answer: false,
+                          hasSelectedAnswer: _hasSelectedAnswer,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 64.0),
+                  if (_hasSelectedAnswer)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 16.0),
+                        _ExplanationSection(
+                          title: '結果',
+                          text: _isMatchAnswer ? '正解' : '不正解',
+                        ),
+                        const SizedBox(height: 16.0),
+                        _ExplanationSection(
+                          title: '解答',
+                          text:
+                              '${_currentQuiz.answer ? 'ある' : 'ない'}（あなたの選択肢「${_selectedAnswer! ? 'ある' : 'ない'}」）',
+                        ),
+                        const SizedBox(height: 16.0),
+                        _ExplanationSection(
+                          title: '解説',
+                          text: _currentQuiz.description,
+                        ),
+                      ],
+                    ),
+                  const Spacer(),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed:
+                          _hasSelectedAnswer ? () => _onTapNext(context) : null,
+                      child: Text(_isFinalQuiz ? '結果を見る' : '次へ'),
                     ),
                   ),
-                  const SizedBox(width: 32.0),
-                  Expanded(
-                    child: _SelectionButton(
-                      onPressed: () => _onTapSelection(false),
-                      answer: false,
-                      hasSelectedAnswer: _hasSelectedAnswer,
-                    ),
-                  ),
+                  const SizedBox(height: 64.0),
                 ],
               ),
-              const SizedBox(height: 64.0),
-              if (_hasSelectedAnswer)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 16.0),
-                    _ExplanationSection(
-                      title: '結果',
-                      text: _isMatchAnswer ? '正解' : '不正解',
-                    ),
-                    const SizedBox(height: 16.0),
-                    _ExplanationSection(
-                      title: '解答',
-                      text:
-                          '${_currentQuiz.answer ? 'ある' : 'ない'}（あなたの選択肢「${_selectedAnswer! ? 'ある' : 'ない'}」）',
-                    ),
-                    const SizedBox(height: 16.0),
-                    _ExplanationSection(
-                      title: '解説',
-                      text: _currentQuiz.description,
-                    ),
-                  ],
-                ),
-              const Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed:
-                      _hasSelectedAnswer ? () => _onTapNext(context) : null,
-                  child: Text(_isFinalQuiz ? '結果を見る' : '次へ'),
-                ),
-              ),
-              const SizedBox(height: 64.0),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -215,6 +194,43 @@ class _SelectionButton extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ResultBanner extends StatelessWidget {
+  const _ResultBanner({
+    required this.isMatchAnswer,
+    required this.onPressedAction,
+  });
+
+  final bool isMatchAnswer;
+  final void Function() onPressedAction;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialBanner(
+      content: Row(
+        children: [
+          isMatchAnswer
+              ? const Icon(
+                  Icons.circle_outlined,
+                  color: Colors.red,
+                )
+              : const Icon(
+                  Icons.close,
+                  color: Colors.blue,
+                ),
+          const SizedBox(width: 8.0),
+          Text(isMatchAnswer ? '正解' : '不正解'),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: onPressedAction,
+          child: const Text('次へ'),
+        ),
+      ],
     );
   }
 }
