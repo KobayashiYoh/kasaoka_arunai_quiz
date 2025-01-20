@@ -17,6 +17,8 @@ class _QuizPageState extends State<QuizPage> {
 
   Quiz get _currentQuiz => Constants.quizData.elementAt(_currentQuizIndex);
 
+  bool get _hasSelectedAnswer => _selectedAnswer != null;
+
   bool get _isMatchAnswer => _selectedAnswer == _currentQuiz.answer;
 
   bool get _isFinalQuiz => _currentQuizIndex == Constants.quizData.length - 1;
@@ -48,7 +50,7 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _onTapSelection(bool selectedAnswer) {
-    if (_selectedAnswer != null) return;
+    if (_hasSelectedAnswer) return;
     setState(() {
       _selectedAnswer = selectedAnswer;
     });
@@ -92,13 +94,14 @@ class _QuizPageState extends State<QuizPage> {
                 'Q${_currentQuizIndex + 1}. ${_currentQuiz.question}',
                 style: const TextStyle(fontSize: 18.0),
               ),
-              const SizedBox(height: 16.0),
+              const SizedBox(height: 32.0),
               Row(
                 children: [
                   Expanded(
                     child: _SelectionButton(
                       onPressed: () => _onTapSelection(true),
                       answer: true,
+                      hasSelectedAnswer: _hasSelectedAnswer,
                     ),
                   ),
                   const SizedBox(width: 32.0),
@@ -106,12 +109,13 @@ class _QuizPageState extends State<QuizPage> {
                     child: _SelectionButton(
                       onPressed: () => _onTapSelection(false),
                       answer: false,
+                      hasSelectedAnswer: _hasSelectedAnswer,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 64.0),
-              if (_selectedAnswer != null)
+              if (_hasSelectedAnswer)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -137,8 +141,8 @@ class _QuizPageState extends State<QuizPage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () =>
-                      _selectedAnswer == null ? null : _onTapNext(context),
+                  onPressed:
+                      _hasSelectedAnswer ? () => _onTapNext(context) : null,
                   child: Text(_isFinalQuiz ? '結果を見る' : '次へ'),
                 ),
               ),
@@ -182,29 +186,29 @@ class _SelectionButton extends StatelessWidget {
   const _SelectionButton({
     required this.onPressed,
     required this.answer,
+    required this.hasSelectedAnswer,
   });
 
   final void Function()? onPressed;
   final bool answer;
+  final bool hasSelectedAnswer;
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: onPressed,
+      onPressed: hasSelectedAnswer ? null : onPressed,
+      style: OutlinedButton.styleFrom(
+        backgroundColor: hasSelectedAnswer ? Colors.grey[400] : null,
+        side: const BorderSide(width: 2.0),
+      ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 32.0),
         child: Column(
           children: [
-            Icon(
-              answer ? Icons.circle_outlined : Icons.close,
-              color: answer ? Colors.red : Colors.blue,
-              size: 80.0,
-            ),
-            const SizedBox(height: 8.0),
             Text(
               answer ? 'ある' : 'ない',
               style: const TextStyle(
-                fontSize: 20.0,
+                fontSize: 24.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
