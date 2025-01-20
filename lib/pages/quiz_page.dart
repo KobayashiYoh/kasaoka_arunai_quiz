@@ -25,6 +25,8 @@ class _QuizPageState extends State<QuizPage> {
 
   bool get _isFinalQuiz => _currentQuizIndex == Constants.quizData.length - 1;
 
+  String get _goToNextButtonText => _isFinalQuiz ? '結果を見る' : '次へ';
+
   void _onTapSelection(bool selectedAnswer) {
     if (_hasSelectedAnswer) return;
     setState(() {
@@ -62,6 +64,7 @@ class _QuizPageState extends State<QuizPage> {
               _ResultBanner(
                 isMatchAnswer: _hasSelectedAnswer,
                 onPressedAction: () => _onTapNext(context),
+                actionButtonText: _goToNextButtonText,
               ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -122,7 +125,7 @@ class _QuizPageState extends State<QuizPage> {
                     child: ElevatedButton(
                       onPressed:
                           _hasSelectedAnswer ? () => _onTapNext(context) : null,
-                      child: Text(_isFinalQuiz ? '結果を見る' : '次へ'),
+                      child: Text(_goToNextButtonText),
                     ),
                   ),
                   const SizedBox(height: 64.0),
@@ -177,10 +180,12 @@ class _ResultBanner extends StatelessWidget {
   const _ResultBanner({
     required this.isMatchAnswer,
     required this.onPressedAction,
+    required this.actionButtonText,
   });
 
   final bool isMatchAnswer;
   final void Function() onPressedAction;
+  final String actionButtonText;
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +208,7 @@ class _ResultBanner extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: onPressedAction,
-          child: const Text('次へ'),
+          child: Text(actionButtonText),
         ),
       ],
     );
