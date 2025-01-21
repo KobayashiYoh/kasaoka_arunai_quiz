@@ -16,6 +16,7 @@ class _QuizPageState extends State<QuizPage> {
   int _score = 0;
   int _currentQuizIndex = 0;
   bool? _selectedAnswer;
+  double _bannerDy = -1;
 
   Quiz get _currentQuiz => Constants.quizData.elementAt(_currentQuizIndex);
 
@@ -31,6 +32,7 @@ class _QuizPageState extends State<QuizPage> {
     if (_hasSelectedAnswer) return;
     setState(() {
       _selectedAnswer = selectedAnswer;
+      _bannerDy = 0;
     });
     if (_isMatchAnswer) {
       setState(() {
@@ -50,6 +52,7 @@ class _QuizPageState extends State<QuizPage> {
     setState(() {
       _selectedAnswer = null;
       _currentQuizIndex++;
+      _bannerDy = -1;
     });
   }
 
@@ -60,12 +63,17 @@ class _QuizPageState extends State<QuizPage> {
       body: SafeArea(
         child: Stack(
           children: [
-            if (_hasSelectedAnswer)
-              _ResultBanner(
-                isMatchAnswer: _hasSelectedAnswer,
-                onPressedAction: () => _onTapNext(context),
-                actionButtonText: _goToNextButtonText,
-              ),
+            AnimatedSlide(
+              offset: Offset(0, _bannerDy),
+              duration: const Duration(milliseconds: 100),
+              child: _hasSelectedAnswer
+                  ? _ResultBanner(
+                      isMatchAnswer: _isMatchAnswer,
+                      onPressedAction: () => _onTapNext(context),
+                      actionButtonText: _goToNextButtonText,
+                    )
+                  : const SizedBox.shrink(),
+            ),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
