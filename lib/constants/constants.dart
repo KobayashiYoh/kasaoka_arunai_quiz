@@ -35,9 +35,8 @@ class Constants {
       answer: true,
     ),
     Quiz(
-      question: '笠岡に中国自動車道のサービスエリアはある？ない？',
-      description:
-          'そもそも笠岡に中国自動車道は通っていません。山陽自動車道は通っていますが、あるのはサービスエリアではなく、パーキングエリアです。',
+      question: '笠岡に中国自動車道のSAはある？ない？',
+      description: 'そもそも笠岡に中国自動車道は通っていません。山陽自動車道は通っていますが、あるのはSAではなく、PAです。',
       answer: false,
     ),
     Quiz(
