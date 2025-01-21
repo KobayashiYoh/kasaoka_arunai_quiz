@@ -163,18 +163,23 @@ class _SelectionButton extends StatelessWidget {
     return OutlinedButton(
       onPressed: hasSelectedAnswer ? null : onPressed,
       style: OutlinedButton.styleFrom(
-        backgroundColor: hasSelectedAnswer ? Colors.grey[400] : null,
-        side: const BorderSide(width: 2.0),
+        backgroundColor: hasSelectedAnswer ? Colors.grey[300] : null,
+        side: BorderSide(
+          width: 2.0,
+          color: hasSelectedAnswer ? Colors.transparent : Colors.black,
+        ),
+        overlayColor: Colors.black,
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 32.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Column(
           children: [
             Text(
               answer ? 'ある' : 'ない',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
+                color: hasSelectedAnswer ? Colors.grey[400] : Colors.black,
               ),
             ),
           ],
@@ -216,7 +221,12 @@ class _ResultBanner extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: onPressedAction,
-          child: Text(actionButtonText),
+          child: Text(
+            actionButtonText,
+            style: TextStyle(
+              color: Colors.green[900],
+            ),
+          ),
         ),
       ],
     );
